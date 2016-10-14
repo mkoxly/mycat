@@ -87,12 +87,11 @@ class DirectDBJoinHandler implements SQLJobHandler {
 	public boolean onRowData(String dataNode, byte[] rowData) {
 
 		String id = ResultSetUtil.getColumnValAsString(rowData, fields, 0);
-		// 放入结果集
+		// 鏀惧叆缁撴灉闆�
 		rows.put(id, rowData);
 		ids.offer(id);
 
-		int batchSize = 999;
-		// 满1000条，发送一个查询请求
+		int batchSize = 999;		
 		if (ids.size() > batchSize) {
 			createQryJob(batchSize);
 		}
@@ -134,13 +133,13 @@ class MyRowOutPutDataHandler implements SQLJobHandler {
 	@Override
 	public boolean onRowData(String dataNode, byte[] rowData) {
 		RowDataPacket rowDataPkg = ResultSetUtil.parseRowData(rowData, bfields);
-		// 获取Id字段，
+		// 鑾峰彇Id瀛楁锛�
 		String id = ByteUtil.getString(rowDataPkg.fieldValues.get(0));
 		byte[] bname = rowDataPkg.fieldValues.get(1);
-		// 查找ID对应的A表的记录
+		// 鏌ユ壘ID瀵瑰簲鐨凙琛ㄧ殑璁板綍
 		byte[] arow = arows.remove(id);
 		rowDataPkg = ResultSetUtil.parseRowData(arow, afields);
-		// 设置b.name 字段
+		// 璁剧疆b.name 瀛楁
 		rowDataPkg.add(bname);
 
 		ctx.writeRow(rowDataPkg);
